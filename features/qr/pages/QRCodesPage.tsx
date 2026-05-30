@@ -1,19 +1,50 @@
+"use client";
+
+import { ExportButton } from "@/shared/components/data-display/ExportButton";
 import { PageHeader } from "@/shared/components/layout/PageHeader";
 import { SectionLabel } from "@/shared/components/ui/SectionLabel";
 import { GenerateQRModal } from "../components/GenerateQRModal";
+import { OpenGenerateButton } from "../components/OpenGenerateButton";
 import { QRAnalyticsChart } from "../components/QRAnalyticsChart";
 import { QRCodeDisplayPanel } from "../components/QRCodeDisplayPanel";
 import { QRCodesTable } from "../components/QRCodesTable";
 import { ScanLogPanel } from "../components/ScanLogPanel";
-import { OpenGenerateButton } from "../components/OpenGenerateButton";
+import { useQRStore } from "../store/useQRStore";
+import { QR_TYPE_LABELS } from "../types";
+
+const exportColumns = [
+  { key: "name" as const, header: "Code Name" },
+  { key: "type" as const, header: "Type" },
+  { key: "source" as const, header: "Source" },
+  { key: "campaign" as const, header: "Campaign" },
+  { key: "scans" as const, header: "Scans" },
+  { key: "conversions" as const, header: "Conversions" },
+  { key: "createdAt" as const, header: "Created" },
+];
 
 export default function QRCodesPage() {
+  const codes = useQRStore((s) => s.codes);
+  const exportData = codes.map((c) => ({
+    name: c.name,
+    type: QR_TYPE_LABELS[c.type],
+    source: c.source,
+    campaign: c.campaign,
+    scans: c.scans,
+    conversions: c.conversions,
+    createdAt: c.createdAt,
+  }));
+
   return (
     <>
       <PageHeader
         title="QR Codes"
         subtitle="Generate and track QR codes across events and campaigns"
-        action={<OpenGenerateButton />}
+        action={
+          <div className="flex items-center gap-2">
+            <ExportButton data={exportData} filename="tcs-qr-codes" columns={exportColumns} />
+            <OpenGenerateButton />
+          </div>
+        }
       />
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-6">

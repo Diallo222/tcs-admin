@@ -135,6 +135,41 @@ Phased execution aligned with `TCS_Web_Admin_Build_Plan.md` §10 Sprint Order.
 
 ---
 
+## Sprint 10 — Phase 1 Completion ✓
+
+**Goal:** Close remaining Phase 1 gaps from build plan inventory.
+
+| Task | Deliverable |
+|---|---|
+| 10.1 | `EventQRCard` + `EventSpeakers` on event detail page |
+| 10.2 | FilterBar + debounce + URL sync on Events, Intros, Payments, Sponsors |
+| 10.3 | CSV export on Dinners and QR Codes pages |
+| 10.4 | Suspense wrappers for filter pages (events, intros, payments) |
+| 10.5 | `.env.example` for Phase 2 integration prep |
+
+**Verify:** `npx tsc --noEmit && npm run lint && npm run build`
+
+**Commit:** `feat: phase 1 completion — filters, event detail, exports`
+
+---
+
+## Phase 1 — Complete ✓
+
+All 12 admin modules ship with mock data, Zustand stores, responsive shell, command palette, CSV export on key tables, URL-synced filters, bulk member actions, and edit member flow.
+
+### Deferred to Phase 2 (per build plan §12)
+
+| Area | Work |
+|---|---|
+| Data layer | Replace `mock*.ts` with Supabase API modules |
+| Auth | Magic link via Supabase Auth |
+| Real-time | Postgres subscriptions for live dashboards |
+| Integrations | Dub.co (QR), SendGrid/Resend (outreach), Stripe (payments) |
+| Shared UI | shadcn Select, Switch, Checkbox, DropdownMenu, Tooltip |
+| Optional UX | Member profile Sheet slide-over, AgendaBuilder, SpeakerManager |
+
+---
+
 ## Per-Sprint Workflow
 2. Run `npx tsc --noEmit && npm run lint && npm run build`
 3. Review against build plan component inventory

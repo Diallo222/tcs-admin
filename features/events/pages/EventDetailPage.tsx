@@ -6,6 +6,8 @@ import { SectionLabel } from "@/shared/components/ui/SectionLabel";
 import { formatDate } from "@/shared/utils/formatters";
 import { useRouter } from "next/navigation";
 import { AttendeeTable } from "../components/AttendeeTable";
+import { EventQRCard } from "../components/EventQRCard";
+import { EventSpeakers } from "../components/EventSpeakers";
 import { EventStatsRow } from "../components/EventStatsRow";
 import { EventStatusBadge } from "../components/EventStatusBadge";
 import { useEventsStore } from "../store/useEventsStore";
@@ -96,6 +98,11 @@ export default function EventDetailPage({ eventId }: { eventId: string }) {
             </ul>
           </CardContent>
         </Card>
+
+        <div className="space-y-6 lg:col-start-3">
+          <EventQRCard eventId={event.id} eventTitle={event.title} />
+          <EventSpeakers speakers={event.speakers} />
+        </div>
       </div>
 
       {event.recap && (

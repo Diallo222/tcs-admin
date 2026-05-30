@@ -1,21 +1,52 @@
 "use client";
 
+import { FilterBar } from "@/shared/components/layout/FilterBar";
 import { Input } from "@/shared/components/ui/Input";
+import { useDebounce } from "@/shared/hooks/useDebounce";
+import { useTableFilters } from "@/shared/hooks/useTableFilters";
+import { useEffect, useMemo, useState } from "react";
 import { usePaymentsStore } from "../store/usePaymentsStore";
+
+const defaultFilters = {
+  status: "",
+  tier: "",
+  search: "",
+  dateFrom: "",
+  dateTo: "",
+};
 
 export function PaymentFilters() {
   const filters = usePaymentsStore((s) => s.filters);
   const setFilter = usePaymentsStore((s) => s.setFilter);
   const clearFilters = usePaymentsStore((s) => s.clearFilters);
+  const [searchInput, setSearchInput] = useState(filters.search);
+  const debouncedSearch = useDebounce(searchInput, 300);
+
+  useTableFilters(filters, setFilter, defaultFilters);
+
+  useEffect(() => {
+    setFilter("search", debouncedSearch);
+  }, [debouncedSearch, setFilter]);
+
+  const activeCount = useMemo(
+    () => Object.values(filters).filter(Boolean).length,
+    [filters],
+  );
 
   return (
-    <div className="flex flex-wrap items-end gap-3 mb-4">
+    <FilterBar
+      activeCount={activeCount}
+      onClear={() => {
+        clearFilters();
+        setSearchInput("");
+      }}
+    >
       <div className="flex-1 min-w-[200px]">
         <Input
           label="Search"
           placeholder="Member name, email, payment ID…"
-          value={filters.search}
-          onChange={(e) => setFilter("search", e.target.value)}
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
         />
       </div>
       <div className="w-36">
@@ -63,13 +94,6 @@ export function PaymentFilters() {
           onChange={(e) => setFilter("dateTo", e.target.value)}
         />
       </div>
-      <button
-        type="button"
-        onClick={clearFilters}
-        className="h-11 px-4 text-sm text-muted hover:text-ink transition-colors"
-      >
-        Clear
-      </button>
-    </div>
+    </FilterBar>
   );
 }
