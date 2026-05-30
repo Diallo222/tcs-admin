@@ -11,10 +11,13 @@ interface MembersState {
   approvals: ApprovalRequest[];
   filters: MemberFilters;
   selectedIds: string[];
+  sheetMemberId: string | null;
   approvalTab: "all" | "pending" | "approved" | "declined";
   setFilter: (key: keyof MemberFilters, value: string) => void;
   clearFilters: () => void;
   setApprovalTab: (tab: MembersState["approvalTab"]) => void;
+  openMemberSheet: (id: string) => void;
+  closeMemberSheet: () => void;
   toggleSelect: (id: string) => void;
   selectAll: (ids: string[]) => void;
   clearSelection: () => void;
@@ -37,6 +40,7 @@ export const useMembersStore = create<MembersState>()(
     approvals: mockApprovals,
     filters: defaultFilters,
     selectedIds: [],
+    sheetMemberId: null,
     approvalTab: "all",
     setFilter: (key, value) =>
       set((state) => {
@@ -44,6 +48,8 @@ export const useMembersStore = create<MembersState>()(
       }),
     clearFilters: () => set((state) => { state.filters = defaultFilters; }),
     setApprovalTab: (tab) => set((state) => { state.approvalTab = tab; }),
+    openMemberSheet: (id) => set((state) => { state.sheetMemberId = id; }),
+    closeMemberSheet: () => set((state) => { state.sheetMemberId = null; }),
     toggleSelect: (id) =>
       set((state) => {
         const idx = state.selectedIds.indexOf(id);

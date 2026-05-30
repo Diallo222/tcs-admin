@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
 import { brand, logo } from "@/core/constants/brand";
+import { AppProviders } from "@/shared/providers/AppProviders";
 import { Toaster } from "sonner";
 import "./globals.css";
 
@@ -27,7 +28,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${dmSans.variable} h-full antialiased`}>
       <body className="min-h-full font-sans">
-        {children}
+        <AppProviders>
+          {children}
+        </AppProviders>
         <Toaster position="top-right" richColors />
       </body>
     </html>

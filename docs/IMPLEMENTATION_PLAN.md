@@ -167,8 +167,6 @@ All 12 admin modules ship with mock data, Zustand stores, responsive shell, comm
 | Auth | Magic link via Supabase Auth |
 | Real-time | Postgres subscriptions for live dashboards |
 | Integrations | Dub.co (QR), SendGrid/Resend (outreach), Stripe (payments) |
-| Shared UI | shadcn Select, Switch, Checkbox, DropdownMenu, Tooltip |
-| Optional UX | Member profile Sheet slide-over, AgendaBuilder, SpeakerManager |
 
 ---
 
@@ -187,6 +185,26 @@ All 12 admin modules ship with mock data, Zustand stores, responsive shell, comm
 **Verify:** `npx tsc --noEmit && npm run lint && npm run build`
 
 **Commit:** `feat: align admin branding with mobile app`
+
+---
+
+## Sprint 12 — UI Components + UX Polish ✓
+
+**Goal:** Close remaining Phase 1 optional UX items (no API/DB).
+
+| Task | Deliverable |
+|---|---|
+| 12.1 | Radix UI atoms: Checkbox, Select, DropdownMenu, Tooltip, Switch |
+| 12.2 | `MemberDetailSheet` — quick profile slide-over from members table |
+| 12.3 | `AgendaBuilder` + `SpeakerManager` on create event form |
+| 12.4 | Leads table → shared `BulkActionBar` + Checkbox |
+| 12.5 | Lead detail status → Radix Select |
+| 12.6 | Route `loading.tsx` for members, events, sponsors |
+| 12.7 | Project README |
+
+**Verify:** `npx tsc --noEmit && npm run lint && npm run build`
+
+**Commit:** `feat: shared radix ui, member sheet, event builders`
 
 ---
 

@@ -18,7 +18,7 @@ export default function NewEventPage() {
   return (
     <>
       <PageHeader title="Create Event" subtitle="Set up a new summit event" />
-      <div className="max-w-2xl">
+      <div className="max-w-3xl">
         <EventForm onSubmit={handleSubmit} onCancel={() => router.push("/events")} />
       </div>
     </>

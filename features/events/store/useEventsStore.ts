@@ -81,8 +81,8 @@ export const useEventsStore = create<EventsState>()(
         vipCount: 0,
         noShowCount: 0,
         sponsors: [],
-        speakers: [],
-        agenda: [],
+        speakers: data.speakers.filter((s) => s.name.trim()),
+        agenda: data.agenda.filter((a) => a.title.trim()),
         attendees: [],
       };
       set((state) => {

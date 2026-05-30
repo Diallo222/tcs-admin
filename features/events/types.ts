@@ -70,4 +70,6 @@ export interface EventFormData {
   endDate: string;
   capacity: number;
   status: "draft" | "published";
+  speakers: Speaker[];
+  agenda: AgendaItem[];
 }

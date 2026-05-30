@@ -2,6 +2,13 @@
 
 import { Button } from "@/shared/components/ui/Button";
 import { SectionLabel } from "@/shared/components/ui/SectionLabel";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/shared/components/ui/Select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/shared/components/ui/Sheet";
 import { formatDateTime } from "@/shared/utils/formatters";
 import { useOutreachStore } from "../store/useOutreachStore";
@@ -73,16 +80,19 @@ export function LeadDetailPanel() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-ink2">Change Status</label>
-                <select
-                  className="flex h-10 w-full rounded-xl border border-border bg-white px-3 text-sm"
+                <Select
                   value={lead.status}
-                  onChange={(e) => updateLeadStatus(lead.id, e.target.value as LeadStatus)}
+                  onValueChange={(value) => updateLeadStatus(lead.id, value as LeadStatus)}
                 >
-                  {Object.entries(LEAD_STATUS_LABELS).map(([value, label]) => (
-                    <option key={value} value={value}>{label}</option>
-                  ))}
-                </select>
+                  <SelectTrigger label="Change Status">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(LEAD_STATUS_LABELS).map(([value, label]) => (
+                      <SelectItem key={value} value={value}>{label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               {lead.notes && (

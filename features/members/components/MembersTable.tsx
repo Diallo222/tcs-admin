@@ -5,8 +5,17 @@ import { DataTable } from "@/shared/components/data-display/DataTable";
 import { ExportButton } from "@/shared/components/data-display/ExportButton";
 import { Avatar } from "@/shared/components/ui/Avatar";
 import { Button } from "@/shared/components/ui/Button";
+import { Checkbox } from "@/shared/components/ui/Checkbox";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/shared/components/ui/DropdownMenu";
 import { formatDate } from "@/shared/utils/formatters";
 import { type ColumnDef } from "@tanstack/react-table";
+import { MoreHorizontal } from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
 import { toast } from "sonner";
@@ -30,32 +39,30 @@ export function MembersTable() {
   const selectAll = useMembersStore((s) => s.selectAll);
   const clearSelection = useMembersStore((s) => s.clearSelection);
   const bulkApproveMembers = useMembersStore((s) => s.bulkApproveMembers);
+  const openMemberSheet = useMembersStore((s) => s.openMemberSheet);
   const members = getFilteredMembers();
 
   const selectedMembers = members.filter((m) => selectedIds.includes(m.id));
+  const allSelected = selectedIds.length === members.length && members.length > 0;
 
   const columns = useMemo<ColumnDef<AdminMember>[]>(
     () => [
       {
         id: "select",
         header: () => (
-          <input
-            type="checkbox"
-            checked={selectedIds.length === members.length && members.length > 0}
-            onChange={(e) => {
-              if (e.target.checked) selectAll(members.map((m) => m.id));
+          <Checkbox
+            checked={allSelected}
+            onCheckedChange={(checked) => {
+              if (checked) selectAll(members.map((m) => m.id));
               else clearSelection();
             }}
-            className="rounded border-border"
             aria-label="Select all members"
           />
         ),
         cell: ({ row }) => (
-          <input
-            type="checkbox"
+          <Checkbox
             checked={selectedIds.includes(row.original.id)}
-            onChange={() => toggleSelect(row.original.id)}
-            className="rounded border-border"
+            onCheckedChange={() => toggleSelect(row.original.id)}
             aria-label={`Select ${row.original.name}`}
           />
         ),
@@ -65,13 +72,17 @@ export function MembersTable() {
         accessorKey: "name",
         header: "Name",
         cell: ({ row }) => (
-          <div className="flex items-center gap-3">
+          <button
+            type="button"
+            className="flex items-center gap-3 text-left hover:opacity-80"
+            onClick={() => openMemberSheet(row.original.id)}
+          >
             <Avatar name={row.original.name} size="sm" executive={row.original.tier === "executive"} />
             <div>
               <p className="font-medium">{row.original.name}</p>
               <p className="text-xs text-muted">{row.original.email}</p>
             </div>
-          </div>
+          </button>
         ),
       },
       { accessorKey: "role", header: "Role" },
@@ -98,14 +109,35 @@ export function MembersTable() {
         id: "actions",
         header: "",
         cell: ({ row }) => (
-          <Link href={`/members/${row.original.id}`}>
-            <Button variant="ghost" size="sm">View</Button>
-          </Link>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" aria-label="Member actions">
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => openMemberSheet(row.original.id)}>
+                Quick view
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href={`/members/${row.original.id}`}>Open full profile</Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => {
+                  bulkApproveMembers([row.original.id]);
+                  toast.success(`Approved ${row.original.name}`);
+                }}
+              >
+                Approve member
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         ),
         enableSorting: false,
       },
     ],
-    [members, selectedIds, selectAll, clearSelection, toggleSelect],
+    [members, selectedIds, allSelected, selectAll, clearSelection, toggleSelect, openMemberSheet, bulkApproveMembers],
   );
 
   return (

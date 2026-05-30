@@ -1,15 +1,18 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { AgendaBuilder } from "../components/AgendaBuilder";
+import { SpeakerManager } from "../components/SpeakerManager";
 import { Button } from "@/shared/components/ui/Button";
 import { Card, CardContent, CardHeader } from "@/shared/components/ui/Card";
 import { GradientButton } from "@/shared/components/ui/GradientButton";
 import { Input } from "@/shared/components/ui/Input";
 import { Textarea } from "@/shared/components/ui/Textarea";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { EVENT_TYPES } from "../data/mockEvents";
-import type { EventFormData } from "../types";
+import type { AgendaItem, EventFormData, Speaker } from "../types";
 
 const eventFormSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
@@ -31,6 +34,9 @@ interface EventFormProps {
 }
 
 export function EventForm({ onSubmit, onCancel }: EventFormProps) {
+  const [speakers, setSpeakers] = useState<Speaker[]>([]);
+  const [agenda, setAgenda] = useState<AgendaItem[]>([]);
+
   const {
     register,
     handleSubmit,
@@ -51,7 +57,10 @@ export function EventForm({ onSubmit, onCancel }: EventFormProps) {
   });
 
   return (
-    <form onSubmit={handleSubmit((data) => onSubmit(data))} className="space-y-6">
+    <form
+      onSubmit={handleSubmit((data) => onSubmit({ ...data, speakers, agenda }))}
+      className="space-y-6"
+    >
       <Card>
         <CardHeader>
           <h2 className="text-sm font-semibold text-ink">Basic Information</h2>
@@ -96,6 +105,18 @@ export function EventForm({ onSubmit, onCancel }: EventFormProps) {
             <Input label="Location (City)" error={errors.location?.message} {...register("location")} />
             <Input label="Venue" error={errors.venue?.message} {...register("venue")} />
           </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="pt-6">
+          <SpeakerManager speakers={speakers} onChange={setSpeakers} />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="pt-6">
+          <AgendaBuilder items={agenda} onChange={setAgenda} />
         </CardContent>
       </Card>
 

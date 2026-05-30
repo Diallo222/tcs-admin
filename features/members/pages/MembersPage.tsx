@@ -2,6 +2,7 @@
 
 import { ExportButton } from "@/shared/components/data-display/ExportButton";
 import { PageHeader } from "@/shared/components/layout/PageHeader";
+import { MemberDetailSheet } from "../components/MemberDetailSheet";
 import { MemberFilters } from "../components/MemberFilters";
 import { MembersTable } from "../components/MembersTable";
 import { useMembersStore } from "../store/useMembersStore";
@@ -36,6 +37,7 @@ export default function MembersPage() {
       />
       <MemberFilters />
       <MembersTable />
+      <MemberDetailSheet />
     </>
   );
 }

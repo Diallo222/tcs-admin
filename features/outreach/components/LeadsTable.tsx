@@ -1,15 +1,27 @@
 "use client";
 
+import { BulkActionBar } from "@/shared/components/layout/BulkActionBar";
 import { DataTable } from "@/shared/components/data-display/DataTable";
+import { ExportButton } from "@/shared/components/data-display/ExportButton";
 import { Button } from "@/shared/components/ui/Button";
-import { exportToCsv } from "@/shared/utils/csvExport";
+import { Checkbox } from "@/shared/components/ui/Checkbox";
 import { formatDate } from "@/shared/utils/formatters";
 import { type ColumnDef } from "@tanstack/react-table";
-import { useMemo } from "react";
 import { useOutreachStore } from "../store/useOutreachStore";
 import type { Lead } from "../types";
 import { LeadStatusBadge } from "./LeadStatusBadge";
 import { StageBadge } from "./StageBadge";
+
+const exportColumns = [
+  { key: "name" as const, header: "Name" },
+  { key: "email" as const, header: "Email" },
+  { key: "company" as const, header: "Company" },
+  { key: "title" as const, header: "Title" },
+  { key: "industry" as const, header: "Industry" },
+  { key: "status" as const, header: "Status" },
+  { key: "stage" as const, header: "Stage" },
+  { key: "source" as const, header: "Source" },
+];
 
 export function LeadsTable() {
   const getFilteredLeads = useOutreachStore((s) => s.getFilteredLeads);
@@ -20,28 +32,27 @@ export function LeadsTable() {
   const clearLeadSelection = useOutreachStore((s) => s.clearLeadSelection);
   const deleteLeads = useOutreachStore((s) => s.deleteLeads);
   const leads = getFilteredLeads();
+  const selectedLeads = leads.filter((l) => selectedLeadIds.includes(l.id));
+  const allSelected = selectedLeadIds.length === leads.length && leads.length > 0;
 
-  const columns = useMemo<ColumnDef<Lead>[]>(
-    () => [
+  const columns: ColumnDef<Lead>[] = [
       {
         id: "select",
         header: () => (
-          <input
-            type="checkbox"
-            checked={selectedLeadIds.length === leads.length && leads.length > 0}
-            onChange={(e) => {
-              if (e.target.checked) selectAllLeads(leads.map((l) => l.id));
+          <Checkbox
+            checked={allSelected}
+            onCheckedChange={(checked) => {
+              if (checked) selectAllLeads(leads.map((l) => l.id));
               else clearLeadSelection();
             }}
-            className="rounded border-border"
+            aria-label="Select all leads"
           />
         ),
         cell: ({ row }) => (
-          <input
-            type="checkbox"
+          <Checkbox
             checked={selectedLeadIds.includes(row.original.id)}
-            onChange={() => toggleLeadSelect(row.original.id)}
-            className="rounded border-border"
+            onCheckedChange={() => toggleLeadSelect(row.original.id)}
+            aria-label={`Select ${row.original.name}`}
           />
         ),
         enableSorting: false,
@@ -50,10 +61,14 @@ export function LeadsTable() {
         accessorKey: "name",
         header: "Name",
         cell: ({ row }) => (
-          <div>
+          <button
+            type="button"
+            className="text-left hover:opacity-80"
+            onClick={() => openLeadDetail(row.original.id)}
+          >
             <p className="font-medium">{row.original.name}</p>
             <p className="text-xs text-muted">{row.original.email}</p>
-          </div>
+          </button>
         ),
       },
       { accessorKey: "company", header: "Company" },
@@ -92,38 +107,33 @@ export function LeadsTable() {
         ),
         enableSorting: false,
       },
-    ],
-    [leads, selectedLeadIds, openLeadDetail, selectAllLeads, clearLeadSelection, toggleLeadSelect],
-  );
+    ];
 
-  const handleExport = () => {
-    const exportData = leads.map((l) => ({
-      name: l.name,
-      email: l.email,
-      company: l.company,
-      title: l.title,
-      industry: l.industry,
-      status: l.status,
-      stage: l.stage,
-      source: l.source,
-      lastContacted: l.lastContacted,
-      opens: l.opens,
-      clicks: l.clicks,
-    }));
-    exportToCsv(exportData, "leads-export");
-  };
+  const exportData = selectedLeads.map((l) => ({
+    name: l.name,
+    email: l.email,
+    company: l.company,
+    title: l.title,
+    industry: l.industry,
+    status: l.status,
+    stage: l.stage,
+    source: l.source,
+  }));
 
   return (
-    <div className="space-y-4">
-      {selectedLeadIds.length > 0 && (
-        <div className="flex items-center gap-3 rounded-xl border border-blue1/20 bg-blue-l px-4 py-3">
-          <span className="text-sm text-ink">{selectedLeadIds.length} selected</span>
-          <Button variant="outline" size="sm" onClick={handleExport}>Export CSV</Button>
-          <Button variant="danger" size="sm" onClick={() => deleteLeads(selectedLeadIds)}>Delete</Button>
-          <Button variant="ghost" size="sm" onClick={clearLeadSelection}>Clear</Button>
-        </div>
-      )}
+    <>
+      <BulkActionBar count={selectedLeadIds.length} onClear={clearLeadSelection}>
+        <ExportButton
+          data={exportData}
+          filename="tcs-leads-selected"
+          columns={exportColumns}
+          label="Export selected"
+        />
+        <Button variant="danger" size="sm" onClick={() => deleteLeads(selectedLeadIds)}>
+          Delete
+        </Button>
+      </BulkActionBar>
       <DataTable columns={columns} data={leads} />
-    </div>
+    </>
   );
 }

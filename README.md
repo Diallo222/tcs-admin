@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TCS Admin
 
-## Getting Started
+Web admin dashboard for **TechCatalyst Summit** — manage members, events, sponsors, outreach, and more.
 
-First, run the development server:
+Phase 1 is a static UI backed by mock data and Zustand stores. API integration (Supabase) is planned for Phase 2.
+
+## Stack
+
+| Layer | Package |
+|---|---|
+| Framework | Next.js 16 (App Router) |
+| Language | TypeScript |
+| Styling | Tailwind CSS v4 |
+| State | Zustand + immer |
+| Tables | TanStack Table v8 |
+| Charts | Recharts |
+| Forms | React Hook Form + Zod |
+| UI | Radix primitives + custom TCS design system |
+
+## Getting started
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) — redirects to `/dashboard`. Sign in at `/login` (Phase 1: any email works).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Commands
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run dev      # development server
+npm run build    # production build
+npm run start    # serve production build
+npm run lint     # ESLint
+npx tsc --noEmit # type check
+```
 
-## Learn More
+## Architecture
 
-To learn more about Next.js, take a look at the following resources:
+```
+app/        → App Router pages (thin wrappers)
+features/   → Domain logic by module (12 admin modules)
+shared/     → Reusable components, hooks, utils
+core/       → Design tokens, constants
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**Dependency rule:** `features/* → shared/* → core/*` — features never import from each other.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Each feature contains `pages/`, `components/`, `store/`, `data/mock*.ts`, and `types.ts`.
 
-## Deploy on Vercel
+## Modules
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+`auth` · `dashboard` · `members` · `events` · `intros` · `dinners` · `sponsors` · `qr` · `payments` · `notifications` · `outreach` · `analytics`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Design
+
+Branding matches the [Summit-App](https://github.com/Diallo222/Summit-App) mobile client — DM Sans, TCS color tokens, and logo from `public/logo.png`.
+
+Full build spec: `docs/TCS_Web_Admin_Build_Plan.md`  
+Sprint tracker: `docs/IMPLEMENTATION_PLAN.md`
+
+## Phase 2 (not started)
+
+When the backend is ready: replace `mock*.ts` with Supabase API modules, magic-link auth, and third-party integrations (Dub.co, SendGrid, Stripe). See build plan §12.
