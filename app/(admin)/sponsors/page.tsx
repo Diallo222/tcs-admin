@@ -1,5 +1,3 @@
-import { PlaceholderPage } from "@/shared/components/layout/PlaceholderPage";
+import SponsorsPage from "@/features/sponsors/pages/SponsorsPage";
 
-export default function SponsorsPage() {
-  return <PlaceholderPage title="Sponsors" subtitle="Sponsor companies and portal access" />;
-}
+export default SponsorsPage;

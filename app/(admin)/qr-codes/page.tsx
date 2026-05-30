@@ -1,5 +1,3 @@
-import { PlaceholderPage } from "@/shared/components/layout/PlaceholderPage";
+import QRCodesPage from "@/features/qr/pages/QRCodesPage";
 
-export default function QRCodesPage() {
-  return <PlaceholderPage title="QR Codes" subtitle="Generate and track QR codes" />;
-}
+export default QRCodesPage;
