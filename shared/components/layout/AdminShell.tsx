@@ -4,6 +4,8 @@ import { cn } from "@/shared/utils/cn";
 import { AdminSidebar } from "./AdminSidebar";
 import { AdminTopbar } from "./AdminTopbar";
 import { AuthGuard } from "./AuthGuard";
+import { CommandPalette } from "./CommandPalette";
+import { CommandPaletteProvider } from "./CommandPaletteContext";
 import { SidebarProvider, useSidebar } from "./SidebarContext";
 
 function AdminShellInner({ children }: { children: React.ReactNode }) {
@@ -29,6 +31,7 @@ function AdminShellInner({ children }: { children: React.ReactNode }) {
         <AdminTopbar />
         <main className="flex-1 p-4 md:p-6">{children}</main>
       </div>
+      <CommandPalette />
     </div>
   );
 }
@@ -37,7 +40,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   return (
     <AuthGuard>
       <SidebarProvider>
-        <AdminShellInner>{children}</AdminShellInner>
+        <CommandPaletteProvider>
+          <AdminShellInner>{children}</AdminShellInner>
+        </CommandPaletteProvider>
       </SidebarProvider>
     </AuthGuard>
   );

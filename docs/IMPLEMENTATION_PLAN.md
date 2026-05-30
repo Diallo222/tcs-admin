@@ -96,11 +96,19 @@ Phased execution aligned with `TCS_Web_Admin_Build_Plan.md` §10 Sprint Order.
 | 6.3 | `useDebounce` on member search, auth guard, login redirect |
 | 6.4 | `Skeleton` components, enhanced DataTable empty states |
 
-**Commit:** `feat: responsive shell, csv export, auth guard, and ux polish`
-
 ---
 
-## Per-Sprint Workflow
+## Sprint 7 — Command Palette + Loading States ✓
+
+| Task | Deliverable |
+|---|---|
+| 7.1 | `cmdk` command palette — Cmd/Ctrl+K, nav + quick actions |
+| 7.2 | Topbar search trigger with keyboard hint |
+| 7.3 | `PageSkeleton` + admin/dashboard `loading.tsx` |
+
+**Commit:** `feat: command palette and route loading skeletons`
+
+---
 
 1. Implement phase deliverables
 2. Run `npx tsc --noEmit && npm run lint && npm run build`

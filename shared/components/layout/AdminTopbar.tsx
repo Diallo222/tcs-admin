@@ -6,6 +6,7 @@ import { Bell, Menu, Search } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSidebar } from "./SidebarContext";
+import { useCommandPalette } from "./CommandPaletteContext";
 
 function getBreadcrumbs(pathname: string): { label: string; href: string }[] {
   const segments = pathname.split("/").filter(Boolean);
@@ -29,6 +30,7 @@ export function AdminTopbar() {
   const logout = useAuthStore((s) => s.logout);
   const breadcrumbs = getBreadcrumbs(pathname);
   const { openMobile } = useSidebar();
+  const { toggle: toggleCommandPalette } = useCommandPalette();
 
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-border bg-white px-4 md:px-6">
@@ -61,7 +63,16 @@ export function AdminTopbar() {
       </div>
 
       <div className="flex items-center gap-2 md:gap-4 shrink-0">
-        <div className="relative hidden md:block">
+        <button
+          type="button"
+          onClick={toggleCommandPalette}
+          className="hidden md:flex items-center gap-2 rounded-xl border border-border bg-surf px-3 py-1.5 text-xs text-hint hover:text-ink hover:border-blue1/30 transition-colors"
+        >
+          <Search className="h-3.5 w-3.5" />
+          <span>Search...</span>
+          <kbd className="rounded border border-border bg-white px-1.5 py-0.5 text-[10px] font-medium">⌘K</kbd>
+        </button>
+        <div className="relative hidden lg:block">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-hint" />
           <input
             type="search"
