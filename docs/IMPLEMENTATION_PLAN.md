@@ -123,6 +123,18 @@ Phased execution aligned with `TCS_Web_Admin_Build_Plan.md` §10 Sprint Order.
 
 ---
 
+## Sprint 9 — Member Edit + Lead Filter Polish ✓
+
+| Task | Deliverable |
+|---|---|
+| 9.1 | `EditMemberModal` — RHF + Zod tier/status/notes |
+| 9.2 | Member detail reads from store; notes persist |
+| 9.3 | Lead filters — debounce, FilterBar, URL sync |
+
+**Commit:** `feat: edit member modal and lead filter polish`
+
+---
+
 ## Per-Sprint Workflow
 2. Run `npx tsc --noEmit && npm run lint && npm run build`
 3. Review against build plan component inventory

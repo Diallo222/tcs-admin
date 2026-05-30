@@ -1,7 +1,10 @@
 "use client";
 
-import { Button } from "@/shared/components/ui/Button";
+import { FilterBar } from "@/shared/components/layout/FilterBar";
 import { cn } from "@/shared/utils/cn";
+import { useDebounce } from "@/shared/hooks/useDebounce";
+import { useTableFilters } from "@/shared/hooks/useTableFilters";
+import { useEffect, useMemo, useState } from "react";
 import { useOutreachStore } from "../store/useOutreachStore";
 import type { LeadStage } from "../types";
 
@@ -25,15 +28,33 @@ const statuses = [
 ];
 
 const sources = ["", "TCS Miami Event", "LinkedIn", "Member Referral", "Cold Outreach", "QR Scan", "Website Form", "TCS NYC Event", "TCS Boston Event"];
-
 const industries = ["", "Finance", "Technology", "Healthcare", "Retail", "Venture Capital", "Media", "Energy", "Cybersecurity"];
+
+const defaultFilters = {
+  stage: "",
+  status: "",
+  source: "",
+  industry: "",
+  search: "",
+};
 
 export function LeadFilters() {
   const filters = useOutreachStore((s) => s.filters);
   const setFilter = useOutreachStore((s) => s.setFilter);
   const clearFilters = useOutreachStore((s) => s.clearFilters);
+  const [searchInput, setSearchInput] = useState(filters.search);
+  const debouncedSearch = useDebounce(searchInput, 300);
 
-  const activeCount = Object.values(filters).filter(Boolean).length;
+  useTableFilters(filters, setFilter, defaultFilters);
+
+  useEffect(() => {
+    setFilter("search", debouncedSearch);
+  }, [debouncedSearch, setFilter]);
+
+  const activeCount = useMemo(
+    () => Object.values(filters).filter(Boolean).length,
+    [filters],
+  );
 
   return (
     <div className="space-y-4 mb-6">
@@ -55,7 +76,13 @@ export function LeadFilters() {
         ))}
       </div>
 
-      <div className="flex flex-wrap gap-3 items-end">
+      <FilterBar
+        activeCount={activeCount}
+        onClear={() => {
+          clearFilters();
+          setSearchInput("");
+        }}
+      >
         <div className="space-y-1.5 min-w-[140px]">
           <label className="text-xs font-medium text-ink2">Status</label>
           <select
@@ -100,16 +127,11 @@ export function LeadFilters() {
             type="search"
             placeholder="Search leads..."
             className="flex h-10 w-full rounded-xl border border-border bg-white px-3 text-sm text-ink placeholder:text-hint"
-            value={filters.search}
-            onChange={(e) => setFilter("search", e.target.value)}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
           />
         </div>
-        {activeCount > 0 && (
-          <Button variant="ghost" size="sm" onClick={clearFilters}>
-            Clear ({activeCount})
-          </Button>
-        )}
-      </div>
+      </FilterBar>
     </div>
   );
 }

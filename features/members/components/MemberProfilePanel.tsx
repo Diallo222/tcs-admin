@@ -2,14 +2,24 @@
 
 import { Avatar } from "@/shared/components/ui/Avatar";
 import { Badge } from "@/shared/components/ui/Badge";
+import { Button } from "@/shared/components/ui/Button";
 import { Card, CardContent } from "@/shared/components/ui/Card";
 import { formatDate } from "@/shared/utils/formatters";
-import { mockMembers } from "../data/mockMembers";
+import { useState } from "react";
+import { toast } from "sonner";
+import { useMembersStore } from "../store/useMembersStore";
 import { StatusBadge } from "./StatusBadge";
 import { TierBadge } from "./TierBadge";
 
-export function MemberProfilePanel({ memberId }: { memberId: string }) {
-  const member = mockMembers.find((m) => m.id === memberId);
+export function MemberProfilePanel({
+  memberId,
+  onEdit,
+}: {
+  memberId: string;
+  onEdit?: () => void;
+}) {
+  const getMemberById = useMembersStore((s) => s.getMemberById);
+  const member = getMemberById(memberId);
 
   if (!member) {
     return <p className="text-muted">Member not found</p>;
@@ -17,18 +27,25 @@ export function MemberProfilePanel({ memberId }: { memberId: string }) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-start gap-4">
-        <Avatar name={member.name} size="lg" executive={member.tier === "executive"} />
-        <div>
-          <h2 className="text-xl font-bold text-ink">{member.name}</h2>
-          <p className="text-sm text-muted">{member.title} · {member.company}</p>
-          <p className="text-xs text-hint mt-1">{member.city}</p>
-          <div className="flex gap-2 mt-2">
-            <TierBadge tier={member.tier} />
-            <StatusBadge status={member.status} />
-            {member.isVerified && <Badge variant="gradient">Verified</Badge>}
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex items-start gap-4">
+          <Avatar name={member.name} size="lg" executive={member.tier === "executive"} />
+          <div>
+            <h2 className="text-xl font-bold text-ink">{member.name}</h2>
+            <p className="text-sm text-muted">{member.title} · {member.company}</p>
+            <p className="text-xs text-hint mt-1">{member.city}</p>
+            <div className="flex gap-2 mt-2">
+              <TierBadge tier={member.tier} />
+              <StatusBadge status={member.status} />
+              {member.isVerified && <Badge variant="gradient">Verified</Badge>}
+            </div>
           </div>
         </div>
+        {onEdit && (
+          <Button variant="outline" size="sm" onClick={onEdit}>
+            Edit
+          </Button>
+        )}
       </div>
 
       <Card>
@@ -93,7 +110,12 @@ export function MemberProfilePanel({ memberId }: { memberId: string }) {
 }
 
 export function AdminNotesPanel({ memberId }: { memberId: string }) {
-  const member = mockMembers.find((m) => m.id === memberId);
+  const getMemberById = useMembersStore((s) => s.getMemberById);
+  const updateMember = useMembersStore((s) => s.updateMember);
+  const member = getMemberById(memberId);
+  const [notes, setNotes] = useState(member?.adminNotes ?? "");
+
+  if (!member) return null;
 
   return (
     <Card>
@@ -101,10 +123,23 @@ export function AdminNotesPanel({ memberId }: { memberId: string }) {
         <p className="text-[10px] uppercase text-hint font-semibold mb-2">Admin Notes</p>
         <textarea
           className="w-full min-h-[120px] rounded-xl border border-border p-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue1/20"
-          defaultValue={member?.adminNotes ?? ""}
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
           placeholder="Add internal notes..."
         />
-        <p className="text-[10px] text-hint mt-2">Notes are internal and not visible to members.</p>
+        <div className="flex items-center justify-between mt-2">
+          <p className="text-[10px] text-hint">Notes are internal and not visible to members.</p>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => {
+              updateMember(memberId, { adminNotes: notes });
+              toast.success("Notes saved");
+            }}
+          >
+            Save notes
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );

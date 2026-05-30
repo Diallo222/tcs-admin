@@ -21,6 +21,8 @@ interface MembersState {
   approveMember: (id: string) => void;
   declineMember: (id: string) => void;
   bulkApproveMembers: (ids: string[]) => void;
+  updateMember: (id: string, updates: Partial<Pick<AdminMember, "tier" | "status" | "adminNotes">>) => void;
+  getMemberById: (id: string) => AdminMember | undefined;
   approveApproval: (id: string) => void;
   declineApproval: (id: string) => void;
   getFilteredMembers: () => AdminMember[];
@@ -68,6 +70,12 @@ export const useMembersStore = create<MembersState>()(
         }
         state.selectedIds = [];
       }),
+    updateMember: (id, updates) =>
+      set((state) => {
+        const m = state.members.find((x) => x.id === id);
+        if (m) Object.assign(m, updates);
+      }),
+    getMemberById: (id) => get().members.find((m) => m.id === id),
     approveApproval: (id) =>
       set((state) => {
         const a = state.approvals.find((x) => x.id === id);
